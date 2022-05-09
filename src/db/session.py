@@ -1,17 +1,8 @@
-from typing import Generator
-
-import motor.motor_asyncio
+from pymongo import MongoClient
 
 from ..config import settings
 
-client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URL)
 
-
-def get_db() -> Generator:
-    db = None
-    try:
-
-        db = client.test_first_vds
-        yield db
-    finally:
-        pass
+def get_db():
+    client = MongoClient(settings.MONGODB_URL)
+    return client.test_first_vds
