@@ -1,0 +1,48 @@
+version: "3.7"
+
+services:
+
+  db:
+    image: mongo
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo-js:ro
+      - mongo_volume:/data/db
+    ports:
+      - '27017-27019:27017-27019'
+    environment:
+      - MONGODB_HOST="0.0.0.0"
+      - MONGODB_DB=${MONGODB_DB}
+
+  web:
+    build: .
+    container_name: test-first-vds
+    command: uvicorn src.__main__:app --host 0.0.0.0 --reload
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  worker:
+    build: .
+    command: celery worker --app=src.worker.celery_app --loglevel=info
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - web
+      - redis
+
+  redis:
+    image: redis:6-alpine
+
+volumes:
+  mongo_volume:
