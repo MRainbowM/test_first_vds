@@ -23,6 +23,7 @@ class PyObjectId(ObjectId):
 class TaskCreate(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     status: str = Field(IN_PROGRESS_STATUS)
+    file: bytes = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -32,6 +33,7 @@ class TaskCreate(BaseModel):
 class TaskUpdate(BaseModel):
     status: str = Field(...)
     result: dict
+    file: bytes = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -42,6 +44,8 @@ class TaskInDB(BaseModel):
     id: PyObjectId = Field(..., alias="_id")
     status: str
     result: dict = None
+
+    # file: bytes = None
 
     class Config:
         arbitrary_types_allowed = True

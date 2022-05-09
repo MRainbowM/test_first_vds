@@ -1,26 +1,25 @@
 import csv
+import time
+from io import BytesIO
 
 import pandas as pd
-from fastapi import UploadFile
 
-from .file import file_service
 from .task import task_service
 
 
 class CalcService:
     def __init__(self):
-        # self.chunk_size = 10 ** 6
-        self.chunk_size = 10
+        self.chunk_size = 10 ** 6
 
-    async def summa(self, db, upload_file: UploadFile, task_id: str):
-        path_to_file = file_service.save_file(
-            upload_file=upload_file,
-            file_name=task_id
-        )
+    def summa(self, task_id: str):
+        time.sleep(10)
+        task = task_service.get_by_id(id=task_id)
+
+        data = BytesIO(str.encode(task["file"]))
 
         # read file in chunks
         chunk = pd.read_csv(
-            path_to_file,
+            data,
             chunksize=self.chunk_size,
             sep=',',
             quoting=csv.QUOTE_NONE
@@ -38,12 +37,7 @@ class CalcService:
             summa = pd_df[list(pd_df.columns.values)[i]].astype(float).sum()
             result[str(i)] = summa
 
-        print(result)
-
-        file_service.remove(path_to_file)
-
-        await task_service.update(
-            db=db,
+        task_service.update(
             id=task_id,
             result=result
         )

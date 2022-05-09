@@ -15,8 +15,8 @@ class Settings(BaseSettings):
 
     LOG_LEVEL: int = logging.INFO
 
-    MONGODB_HOST: str
-    MONGODB_DB: str
+    MONGODB_HOST: str = 'db'
+    MONGODB_DB: str = 'test_first_vds'
 
     MONGODB_URL: str = None
 
@@ -29,6 +29,9 @@ class Settings(BaseSettings):
                f"{values.get('MONGODB_HOST')}/" \
                f"{values.get('MONGODB_DB')}?" \
                f"retryWrites=true&w=majority"
+
+    CELERY_BROKER_URL: str = "redis://localhost:6379"
+    CELERY_RESULT_BACKEND: str = "redis://localhost:6379"
 
     class Config:
         case_sensitive = True
