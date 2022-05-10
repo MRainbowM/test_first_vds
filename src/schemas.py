@@ -45,8 +45,6 @@ class TaskInDB(BaseModel):
     status: str
     result: dict = None
 
-    # file: bytes = None
-
     class Config:
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
