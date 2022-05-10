@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 
 from . import schemas
 from .constants import DONE_STATUS
-from .db.session import get_db
+from .db import get_db
 
 
 class TaskService:
