@@ -10,10 +10,9 @@ app.include_router(router)
 
 if __name__ == '__main__':
     uvicorn.run(
-        # app,
-        "src.__main__:app",
+        app,
         host=settings.HOST,
         port=settings.PORT,
         log_level=settings.LOG_LEVEL,
-        debug=True
+        # debug=True
     )
