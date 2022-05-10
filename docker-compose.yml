@@ -14,6 +14,7 @@ services:
       - MONGODB_DB=${MONGODB_DB}
 
   web:
+    image: test_first_vds
     build: .
     container_name: test-first-vds
     command: uvicorn src.__main__:app --host 0.0.0.0 --reload
@@ -21,6 +22,8 @@ services:
       - .:/app
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -33,11 +36,12 @@ services:
     command: celery worker --app=src.worker.celery_app --loglevel=info
     volumes:
       - .:/usr/src/app
+    env_file:
+      - .env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
-      - db
       - web
       - redis
 
