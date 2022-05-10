@@ -1,10 +1,11 @@
 from celery import Celery
 
 from .calc import calc_service
+from .config import settings
 
 celery_app = Celery(__name__)
-celery_app.conf.broker_url = "redis://localhost:6379"
-celery_app.conf.result_backend = "redis://localhost:6379"
+celery_app.conf.broker_url = settings.CELERY_BROKER_URL
+celery_app.conf.result_backend = settings.CELERY_RESULT_BACKEND
 
 
 @celery_app.task()
