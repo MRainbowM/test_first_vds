@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, File, UploadFile, HTTPException, status
 
 from .constants import IN_PROGRESS_STATUS
 from .schemas import Task
@@ -21,16 +21,13 @@ async def root():
     response_model=Task,
     response_model_exclude_none=True
 )
-def create(
-        *,
-        file: UploadFile = File(...)
-):
+def create(file: UploadFile = File(...)):
     task = task_service.create(upload_file=file)
 
     task_ = create_task.delay(str(task.id))
 
-    print(task_)
-    # return {"task_id": task_.id}
+    print(task_.id)
+
     return task
 
 
@@ -39,12 +36,21 @@ def create(
     tags=['Task'],
     response_model=Task,
     response_model_exclude_none=True,
+    responses={
+        404: {"description": "Not found"}
+    },
     summary="Find task by id"
 )
-def get_by_id(
-        *, id: str
-):
-    return task_service.get_by_id(id=id)
+def get_by_id(id: str):
+    task = task_service.get_by_id(id=id)
+
+    if task is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Task not found"
+        )
+
+    return task
 
 
 @router.get(
