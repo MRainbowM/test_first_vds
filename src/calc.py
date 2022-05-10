@@ -12,7 +12,7 @@ class CalcService:
         self.chunk_size = 10 ** 6
 
     def summa(self, task_id: str):
-        time.sleep(10)
+        # time.sleep(10)
         task = task_service.get_by_id(id=task_id)
 
         data = BytesIO(str.encode(task["file"]))
@@ -34,13 +34,11 @@ class CalcService:
         result = {}
 
         for i in range(10, len(cols), 10):
-            summa = pd_df[list(pd_df.columns.values)[i]].astype(float).sum()
+            summa = pd_df[list(pd_df.columns.values)[i]] \
+                .astype(float).sum()
             result[str(i)] = summa
 
-        task_service.update(
-            id=task_id,
-            result=result
-        )
+        task_service.update(id=task_id, result=result)
 
     def prepare_df(self, pd_df: pd.DataFrame):
         pd_df = pd_df.replace('"', '', regex=True)
